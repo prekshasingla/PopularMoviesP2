@@ -2,6 +2,7 @@ package com.example.prekshasingla.popularmovies;
 
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.support.v4.app.Fragment;
@@ -14,6 +15,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.GridView;
+import android.widget.Toast;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -25,13 +27,18 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
 import java.net.URL;
+import java.sql.SQLDataException;
+import java.sql.SQLException;
 import java.util.ArrayList;
+import java.util.List;
 
 public class MainFragment extends Fragment {
 
     private ImageAdapter moviesAdapter;
     private String sortType = "sort_by=popularity.desc";
+    private String sort = "popular";
     private ArrayList<Movie> currentMovieList = new ArrayList<>();
+    private DBAdapter dba;
 
     public MainFragment() {
     }
@@ -39,6 +46,7 @@ public class MainFragment extends Fragment {
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        dba = new DBAdapter(getActivity());
         setHasOptionsMenu(true);
     }
 
@@ -51,33 +59,46 @@ public class MainFragment extends Fragment {
     public boolean onOptionsItemSelected(MenuItem item) {
         int id = item.getItemId();
 
-        Context context = getActivity();
 
         if (id == R.id.action_sort_popularity) {
             sortType = "sort_by=popularity.desc";
-            FetchMovies moviesTask = new FetchMovies();
-            moviesTask.execute();
+            sort = "popular";
+            new FetchMovies().execute();
             return true;
         }
 
         if (id == R.id.action_sort_rated) {
             sortType = "sort_by=vote_average.desc";
-            FetchMovies moviesTask = new FetchMovies();
-            moviesTask.execute();
+            sort = "top_rated";
+            new FetchMovies().execute();
             return true;
         }
+
+        if (id == R.id.action_sort_favourite) {
+            sortType="Favourite";
+            new FetchFavoriteMoviesTask().execute();
+            return true;
+        }
+
 
         return super.onOptionsItemSelected(item);
     }
 
+    public interface Callback {
+        void onItemSelected(Movie movie);
+    }
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
-        Context context = getActivity();
 
-            FetchMovies moviesTask = new FetchMovies();
-            moviesTask.execute();
+        if (!sortType.equalsIgnoreCase("Favourite")) {
+
+            new FetchMovies().execute();
+        } else {
+            new FetchFavoriteMoviesTask().execute();
+        }
+
 
 
 
@@ -93,20 +114,12 @@ public class MainFragment extends Fragment {
             @Override
             public void onItemClick(AdapterView<?> parent, View view, int position, long id) {
                 Movie currentMovie = moviesAdapter.getItem(position);
-                Intent i = new Intent(getActivity(),MovieDetailActivity.class);
-
-                i.putExtra("image",currentMovie.image);
-                i.putExtra("original_title",currentMovie.original_title);
-                i.putExtra("synopsis",currentMovie.synopsis);
-                i.putExtra("user_rating",currentMovie.user_rating);
-                i.putExtra("release_date",currentMovie.release_date);
-
-                startActivity(i);
-
-            }
+                ((Callback) getActivity()).onItemSelected(currentMovie);
+                   }
         });
         return rootView;
     }
+
 
     public class FetchMovies extends AsyncTask<Void, Void, Movie[]> {
         private final String LOG_TAG = FetchMovies.class.getName();
@@ -127,7 +140,7 @@ public class MainFragment extends Fragment {
 
             for (int i = 0; i < moviesArray.length(); i++) {
                 JSONObject movieObject = moviesArray.getJSONObject(i);
-                resultObjects[i] = new Movie("http://image.tmdb.org/t/p/w300/" + movieObject.getString(OWM_POSTER),movieObject.getString(OWM_ORIGINAL_TITLE),movieObject.getString(OWM_SYNOPSIS),movieObject.getString(OWM_RELEASE_DATE),movieObject.getString(OWM_RATING),movieObject.getString(OWM_ID));
+                resultObjects[i] = new Movie("http://image.tmdb.org/t/p/w300/" + movieObject.getString(OWM_POSTER), movieObject.getString(OWM_ORIGINAL_TITLE), movieObject.getString(OWM_SYNOPSIS), movieObject.getString(OWM_RELEASE_DATE), movieObject.getString(OWM_RATING), movieObject.getString(OWM_ID));
             }
             return resultObjects;
         }
@@ -142,7 +155,7 @@ public class MainFragment extends Fragment {
 
             try {
 
-                URL url = new URL("http://api.themoviedb.org/3/discover/movie?" +sortType+  "&api_key=PutYourAPIKeyHere");
+                URL url = new URL("http://api.themoviedb.org/3/movie/" + sort + "?" + sortType + "&api_key=95ac456c4c36f55632a02725a7519821");
                 urlConnection = (HttpURLConnection) url.openConnection();
                 urlConnection.setRequestMethod("GET");
                 urlConnection.connect();
@@ -163,8 +176,7 @@ public class MainFragment extends Fragment {
                     return null;
                 }
                 moviesJsonString = buffer.toString();
-            }
-            catch (IOException e) {
+            } catch (IOException e) {
                 Log.e(LOG_TAG, "Error ", e);
                 return null;
             } finally {
@@ -192,11 +204,32 @@ public class MainFragment extends Fragment {
         @Override
         protected void onPostExecute(Movie[] result) {
             if (result != null) {
-                Context context = getActivity();
                 moviesAdapter.clear();
                 moviesAdapter.addAll(result);
                 moviesAdapter.notifyDataSetChanged();
             }
         }
     }
-}
+    public class FetchFavoriteMoviesTask extends AsyncTask<Void, Void, Movie[]> {
+
+            @Override
+            protected Movie[] doInBackground(Void... params) {
+                 try {
+                    dba.open();
+                }
+                catch (SQLException e) {
+                    e.printStackTrace();
+                }
+                return dba.showFavourite();
+            }
+
+            @Override
+            protected void onPostExecute(Movie[] result) {
+                if (result != null) {
+                    moviesAdapter.clear();
+                    moviesAdapter.addAll(result);
+                    moviesAdapter.notifyDataSetChanged();
+                }
+            }
+        }
+    }

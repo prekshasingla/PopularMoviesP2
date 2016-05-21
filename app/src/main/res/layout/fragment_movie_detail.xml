@@ -7,7 +7,7 @@
 
     <TextView
         android:layout_width="fill_parent"
-        android:layout_height="50dp"
+        android:layout_height="wrap_content"
         android:textAppearance="?android:attr/textAppearanceLarge"
         android:text="@string/movie_title"
         android:id="@+id/movieTitle"
@@ -30,20 +30,21 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:layout_gravity="center"
+        android:layout_alignParentStart="true"
+        android:layout_alignParentLeft="true"
         android:id="@+id/moviePoster"
-        android:layout_below="@+id/movieTitle"
+        android:layout_below="@+id/separatorLine1"
         android:padding="5dp"
         android:adjustViewBounds="true" />
 
     <LinearLayout
         android:layout_width="match_parent"
         android:layout_height="match_parent"
-        android:layout_below="@id/movieTitle"
+        android:layout_below="@id/separatorLine1"
         android:layout_toEndOf="@id/moviePoster"
         android:layout_toRightOf="@+id/moviePoster"
         android:orientation="vertical"
-        android:id="@+id/movieInfoBox"
-        >
+        android:id="@+id/movieInfoBox">
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -63,6 +64,14 @@
             android:gravity="center"
             android:layout_gravity="center" />
 
+        <CheckBox android:id="@+id/star"
+            style="?android:attr/starStyle"
+            android:layout_width="wrap_content"
+            android:padding="10dp"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/user_rating"
+            android:text="Add to Favourites"
+            />
 
     </LinearLayout>
     <View
@@ -89,4 +98,34 @@
         android:background="@android:color/darker_gray"
         android:id="@+id/separatorLine3"
         android:layout_below="@id/synopsis"/>
+
+    <Button
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Trailers"
+        android:id="@+id/Trailers_btn"
+        android:layout_below="@+id/separatorLine3"
+        android:layout_alignParentLeft="true"/>
+    <Button
+        android:layout_width="wrap_content"
+        android:text="Reviews"
+        android:id="@+id/Reviews_btn"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/separatorLine3"
+        android:layout_alignParentRight="true"
+        />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@android:color/darker_gray"
+        android:id="@+id/separatorLine4"
+        android:layout_below="@id/Trailers_btn"/>
+    <ListView
+        android:layout_width="match_parent"
+        android:layout_height="match_parent"
+        android:id="@+id/listview_trailer_review"
+        android:layout_below="@+id/separatorLine4">
+    </ListView>
+
 </RelativeLayout>

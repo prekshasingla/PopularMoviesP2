@@ -28,7 +28,7 @@ class ImageAdapter extends ArrayAdapter<Movie>
 
 
         ImageView posterView = (ImageView) convertView.findViewById(R.id.imageView);
-        Picasso.with(getContext()).load(movie.image).into(posterView);
+          Picasso.with(getContext()).load(movie.image).into(posterView);
 
         return convertView;
     }

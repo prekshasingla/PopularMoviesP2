@@ -1,15 +1,20 @@
 <resources>
+    <string name="api_key">95ac456c4c36f55632a02725a7519821</string>
     <string name="app_name">Popular Movies</string>
     <string name="hello_world">Hello world!</string>
     <string name="action_settings">Settings</string>
     <string name="action_refresh">Refresh</string>
     <string name="action_sort_popularity">Sort By Popularity</string>
     <string name="action_sort_rated">Sort By Rating</string>
+    <string name="action_sort_favourite">Favourites</string>
     <string name="title_activity_movie_detail">Movie Details</string>
     <string name="movie_title">Movie Title</string>
     <string name="release_date">Release Date</string>
     <string name="user_rating">User Rating</string>
+    <string name="read_reviews">Read Reviews</string>
     <string name="synopsis">Synopsis</string>
     <string name="poster_description">Poster View</string>
+    <string name="reviews">Reviews</string>
+    <string name="title_activity_review">ReviewActivity</string>
 </resources>
 

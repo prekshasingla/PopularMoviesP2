@@ -5,4 +5,6 @@
         app:showAsAction="never" />
     <item android:id="@+id/action_sort_rated" android:title="@string/action_sort_rated"
         app:showAsAction="never" />
+    <item android:id="@+id/action_sort_favourite" android:title="@string/action_sort_favourite"
+        app:showAsAction="never" />
 </menu>

@@ -13,6 +13,22 @@ public class Movie {
         super();
     }
 
+    public String getImage() {
+        return image;
+    }
+
+    public void setImage(String image) {
+        this.image = image;
+    }
+
+    public String getId() {
+        return id;
+    }
+
+    public void setId(String id) {
+        this.id = id;
+    }
+
     public Movie(String image, String original_title, String synopsis, String release_date, String user_rating, String id) {
         super();
         this.image = image;
